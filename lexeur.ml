@@ -34,7 +34,7 @@ let convert str is_float =
   with
   |Failure _ -> failwith "Not a correct expression";;
 
-let flag_of s =
+let flag_of s = (* on définit ici les types de chaque caractère, le . est spécial car il peut etre dans les opérateurs et dans les nombres *)
   match s with
   |'+' |'-' |'*' |'/' |'%'  -> 1
   |' ' |'(' |')' -> -1
@@ -48,7 +48,7 @@ let app c s = if c <> ' ' then s:= (!s)^(String.make 1 c);;
 let from_text_to_lexeme txt =
   let n = String.length txt in
   let s = String.uppercase_ascii txt in
-  let cur = ref "" in
+  let cur = ref "" in (* enregistre le terme que l'on traite *)
   let lexeme_l = ref [] in
   let flag = ref (-1) in (* flag=0 -> cur=int or float; flag=1 -> cur=op; flag=-1 -> cur=""; flag=2 -> cur=type *)
   let is_float = ref false in
@@ -95,18 +95,3 @@ let print_t txt =
   let l = from_text_to_lexeme txt in
   List.iter print_lex l;
   print_string "\n";;
-
-let texte1 = "32 - *)21";;
-print_t texte1
-
-let texte2 = "32.12(123  *.12";;
-print_t texte2
-
-let texte3 = "fLoat*";;
-print_t texte3
-
-let texte4 = " .23";;
-print_t texte4
-
-let texte5 = "int56* 36+ *. 23";;
-print_t texte5;

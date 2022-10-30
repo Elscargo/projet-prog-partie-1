@@ -1,18 +1,4 @@
-type lexeme =
-  |Par_ouv
-  |Par_fer
-  |Int of int
-  |Add
-  |Sub
-  |Mul
-  |Div
-  |Mod
-  |Float of float
-  |Addf
-  |Subf
-  |Mulf
-  |Int_of
-  |Float_of
+open Lexeur
 
 (* On oublie les types *)
 type num =
@@ -39,7 +25,7 @@ let rec print_exp exp =
   |Mode (exp1,exp2) -> print_string "("; print_exp exp1; print_string ") mod (";  print_exp exp2; print_string ")"
   |Conve (_,exp) -> print_string "of ("; print_exp exp; print_string ")s"
 
-type lex_exp =
+type lex_exp = (* on créer un type intermédiare pouvant accepter les exceptions *)
   |Val of num
   |Par_ouv
   |Par_fer
@@ -50,6 +36,23 @@ type lex_exp =
   |Mod
   |Conv of bool
   |Exp of exp
+
+let lex_to_lex_exp l =
+  match l with
+  |Int_of -> Conv true
+  |Int n -> Val (Int n)
+  |Float x -> Val (Float x)
+  |Par_ouv -> Par_ouv
+  |Par_fer -> Par_fer
+  |Add -> Add true
+  |Addf -> Add false
+  |Sub -> Sub true
+  |Subf -> Sub false
+  |Mul -> Mul true
+  |Mulf -> Mul false
+  |Div -> Div
+  |Mod -> Mod
+  |Float_of -> Conv false  
 
 let prio lex =
   match lex with
@@ -79,7 +82,7 @@ let conv op arg1 arg2 =
   |Conv b,_ -> Conve (b,ntm arg2)
   |_ -> failwith "impossible1"
 
-let rec split l prof acc =
+let rec split l prof acc = (* dans le cas ou l'on croise une parenthese on parcours la liste pour récupérer l'expression que l'on recherche *)
   match l with
   |[] -> failwith "impossible2"
   |Par_ouv :: xs -> split xs (prof+1) (Par_ouv :: acc)
@@ -91,12 +94,6 @@ let build l =
     match l with
     |Par_ouv :: xs -> let exp1,l1 = split xs 1 [] in aux1 ((aux1 exp1 None 2 []) :: l1) prev p acc
     |x :: Par_ouv :: xs -> let exp1,l1 = split xs 1 [] in aux1 (x :: (aux1 exp1 None 2 []) :: l1) prev p acc
-    (*|x :: y :: z :: xs when ((prio x) = p) && ((prio z) = 0) -> begin match z with
-                                                                |Add b when b -> aux1 xs (Some (Exp (conv x prev (Exp (Adde (b,(Vale (Int 0)),ntm z)))))) p acc
-                                                                |Add b -> aux1 xs (Some (Exp (conv x prev (Exp (Adde (b,(Vale (Float 0.0)),ntm z)))))) p acc 
-                                                                |Sub b when b -> aux1 xs (Some (Exp (conv x prev (Exp (Sube (b,(Vale (Int 0)),ntm z)))))) p acc
-                                                                |Sub b -> aux1 xs (Some (Exp (conv x prev (Exp (Sube (b,(Vale (Float 0.0)),ntm z)))))) p acc
-                                                                |_ -> failwith "impossible" end *)
     |x :: y :: xs when (prio x) = p -> aux1  xs (Some (Exp (conv x prev y))) p acc
     |x :: xs when (prio x) = (-1) -> aux1 xs (Some x) p acc
     |x :: xs -> begin match prev with
@@ -111,6 +108,3 @@ let build l =
   |Exp exp -> exp
   |Val n -> Vale n
   |_ -> failwith "impossible3"
-
-let test1 = [Par_ouv;Val (Float 3.0);Add true;Add true; Val (Float 7.1);Par_fer;Div;Conv true;Val (Int 1)];;
-print_exp (build test1)                  

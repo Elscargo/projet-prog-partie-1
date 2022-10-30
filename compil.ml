@@ -1,10 +1,8 @@
 open Format
 open X86_64
+open Type
 
-type exp = Int of int | Add of exp*exp | Sub of exp*exp | Div of exp*exp | Mod of exp*exp | Mul of exp*exp | Int_of of exp 
-          | Float of float | Addf of exp*exp | Subf of exp*exp | Mulf of exp*exp | Float_of of exp
-
-let evali exp =
+let evali exp t =
   let rec aux exp =
     match exp with
     |Int n -> movq (imm n) (reg rdi)
@@ -27,9 +25,7 @@ let evali exp =
           ret
           ";
           data = label "S_int" ++ string "%d\n";} in
-  let c = open_out "assemb.s" in
+  let c = open_out t in
   let fmt = formatter_of_out_channel c in
   X86_64.print_program fmt code;
   close_out c;;
-
-evali (Div (Int 44,Mod (Int 18,Int 5)))

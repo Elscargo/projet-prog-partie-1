@@ -1,0 +1,20 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\title{Rapport projet programmation 1}
+\author{Joseph Marchand}
+\date{30 octobre 2022}
+\begin{document}
+\maketitle
+\section{Lexeur}
+Pas de problèmes notoires rencontrés. J'ai essayé de faire lexeur relativement permissif quand à la gestion des espaces.La plupart des espaces sont donc inutiles cependant lorsqude j'ai rajouté les flottants le fait que le . soit utilisé dans les opérations comme dans les flottants fait que certains espaces sont nécessaires (ex *.32 est ambigu).
+\section{Parseur}
+Je n'avais pas compris que nous pouvions utiliser Ocamlyacc j'ai donc fait sans. Le Parseur est opérationnel à ceci près qu'il ne gère pas les + et - unaires (j'ai essayé de les intégrer mais cela ce faisait toujours aux frais d'une autre opération ou d'une erreur au niveau de la compilation.)
+Niveau algorithmique j'ai fais plusieurs parcours de liste effuctant à chaque fois les opérations les plus prioritaires. Par soucis de simplicité du code j'ai choisit de cacher les types (flottants,int).
+\section{Type}
+Rien à signaler ici.
+\section{Compilateur}
+Je n'ai pas traité les flottants.
+Le compilateur est opérationnel pour les entiers à ceci près que le résultat pour la division et le modulo n'est correct que sur des entrées positives (souci de dernière minute que je n'ai pas eu le temps de régler) du à la représentation des négatifs en complément à 2.
+\end{document}
